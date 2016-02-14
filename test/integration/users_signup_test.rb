@@ -13,6 +13,20 @@ class UsersSignupTest < ActionDispatch::IntegrationTest
     assert_template 'users/new'
   end
 
+  test "display error msg" do
+    get signup_path
+    post users_path, user: { name:  "",
+                               email: "",
+                               password:              "",
+                               password_confirmation: "" }
+    assert_template 'users/new'
+    assert_select 'div.field_with_errors', 'Name'
+    assert_select 'div.field_with_errors', 'Email'
+    assert_select 'div.field_with_errors', 'Password'
+
+
+  end
+
   test "valid signup information" do
     get signup_path
     assert_difference 'User.count', 1 do
@@ -22,5 +36,7 @@ class UsersSignupTest < ActionDispatch::IntegrationTest
                                             password_confirmation: "password" }
     end
     assert_template 'users/show'
+    assert_not flash.empty?
+
   end
 end
